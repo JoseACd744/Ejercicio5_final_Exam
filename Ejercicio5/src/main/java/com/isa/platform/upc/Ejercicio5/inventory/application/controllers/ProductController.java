@@ -1,15 +1,15 @@
 package com.isa.platform.upc.Ejercicio5.inventory.application.controllers;
 
-
+import com.isa.platform.upc.Ejercicio5.inventory.application.commands.CreateProductCommand;
 import com.isa.platform.upc.Ejercicio5.inventory.application.dtos.ProductRequestDTO;
 import com.isa.platform.upc.Ejercicio5.inventory.application.dtos.ProductResponseDTO;
-import com.isa.platform.upc.Ejercicio5.inventory.application.services.ProductService;
-import com.isa.platform.upc.Ejercicio5.inventory.infrastructure.repositories.ProductRepository;
+import com.isa.platform.upc.Ejercicio5.inventory.application.queries.GetProductByIdQuery;
+import com.isa.platform.upc.Ejercicio5.inventory.application.services.ProductCommandService;
+import com.isa.platform.upc.Ejercicio5.inventory.application.services.ProductQueryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,14 +20,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/")
 public class ProductController {
-    @Autowired
-    private ProductService productService;
-    private final ModelMapper modelMapper;
-    private final ProductRepository productRepository;
+    private final ProductCommandService productCommandService;
+    private final ProductQueryService productQueryService;
 
-    public ProductController( ModelMapper modelMapper, ProductRepository productRepository) {
-        this.modelMapper = modelMapper;
-        this.productRepository = productRepository;
+    @Autowired
+    public ProductController(ProductCommandService productCommandService, ProductQueryService productQueryService) {
+        this.productCommandService = productCommandService;
+        this.productQueryService = productQueryService;
     }
 
     @Operation(summary = "Get products by id", description = "Get products by id")
@@ -35,7 +34,8 @@ public class ProductController {
     @Transactional(readOnly = true)
     @GetMapping("/products/{id}")
     public ResponseEntity<ProductResponseDTO> getProductById(@PathVariable Long id){
-        ProductResponseDTO productResponseDTO = productService.getProductById(id);
+        GetProductByIdQuery query = new GetProductByIdQuery(id);
+        ProductResponseDTO productResponseDTO = productQueryService.handle(query);
         return new ResponseEntity<>(productResponseDTO, HttpStatus.OK);
     }
 
@@ -44,11 +44,8 @@ public class ProductController {
     @Transactional
     @PostMapping("/products")
     public ResponseEntity<ProductResponseDTO> createProduct(@RequestBody ProductRequestDTO productRequestDTO){
-        // Call the service method
-        ProductResponseDTO productResponseDTO = productService.createProduct(productRequestDTO);
-        // Return the created product
+        CreateProductCommand command = new CreateProductCommand(productRequestDTO);
+        ProductResponseDTO productResponseDTO = productCommandService.handle(command);
         return new ResponseEntity<>(productResponseDTO, HttpStatus.CREATED);
     }
-
-
 }
