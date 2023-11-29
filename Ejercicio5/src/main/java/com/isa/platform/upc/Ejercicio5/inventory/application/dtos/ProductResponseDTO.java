@@ -9,4 +9,6 @@ public class ProductResponseDTO {
     private String model;
     private String serialNumber;
     private String monitoringLevel; // Se retorna como String ("ESSENTIAL_MONITORING" o "ADVANCE_MONITORING")
+    private String creationDateTime;
+    private String lastUpdateDateTime;
 }

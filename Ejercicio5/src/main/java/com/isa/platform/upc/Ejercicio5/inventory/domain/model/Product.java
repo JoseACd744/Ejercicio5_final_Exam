@@ -2,6 +2,7 @@ package com.isa.platform.upc.Ejercicio5.inventory.domain.model;
 
 
 import com.isa.platform.upc.Ejercicio5.inventory.domain.enums.MonitoringLevel;
+import com.isa.platform.upc.Ejercicio5.shared.Model.Auditable;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Table(name = "products")
-public class Product {
+public class Product extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
