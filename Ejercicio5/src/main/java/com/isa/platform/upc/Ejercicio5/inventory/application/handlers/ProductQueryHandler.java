@@ -24,6 +24,6 @@ public class ProductQueryHandler implements ProductQueryService {
 
     @Override
     public ProductResponseDTO handle(GetProductByIdQuery query) {
-        return modelMapper.map(productRepository.findById(query.getProductId()).orElseThrow(RuntimeException::new), ProductResponseDTO.class);
+        return modelMapper.map(productRepository.findById(query.productId()).orElseThrow(RuntimeException::new), ProductResponseDTO.class);
     }
 }

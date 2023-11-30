@@ -23,10 +23,10 @@ public class ProductCommandHandler implements ProductCommandService {
 
     @Override
     public ProductResponseDTO handle(CreateProductCommand command) {
-        if (productRepository.existsBySerialNumber(command.getProductRequestDTO().getSerialNumber())) {
+        if (productRepository.existsBySerialNumber(command.productRequestDTO().getSerialNumber())) {
             throw new RuntimeException("A product with the same serial number already exists");
         }
-        Product product = modelMapper.map(command.getProductRequestDTO(), Product.class);
+        Product product = modelMapper.map(command.productRequestDTO(), Product.class);
         Product savedProduct = productRepository.save(product);
         return modelMapper.map(savedProduct, ProductResponseDTO.class);
     }
