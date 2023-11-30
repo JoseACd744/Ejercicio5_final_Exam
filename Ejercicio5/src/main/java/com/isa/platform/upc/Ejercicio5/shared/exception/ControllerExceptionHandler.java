@@ -10,8 +10,8 @@ import java.time.LocalDateTime;
 
 /**
  * Class that handles the exceptions thrown by the controllers.
- * @version 1.0, 08/11/2023
- * @autor Jose Arenas Conde
+ * @version 1.0, 1/12/2023
+ * @author Jose Arenas Conde
  */
 
 @RestControllerAdvice

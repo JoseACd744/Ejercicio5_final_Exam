@@ -3,7 +3,7 @@ package com.isa.platform.upc.Ejercicio5.shared.exception;
 /**
  * Class that represents the ValidationException.
  * @version 1.0, 08/11/2023
- * @autor Jose Arenas Conde
+ * @author Jose Arenas Conde
  */
 public class ValidationException extends RuntimeException{
     public ValidationException() {
