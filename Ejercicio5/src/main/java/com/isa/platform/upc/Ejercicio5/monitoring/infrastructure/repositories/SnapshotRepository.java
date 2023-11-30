@@ -12,8 +12,6 @@ import java.util.Optional;
 @Repository
 public interface SnapshotRepository extends JpaRepository<Snapshot,Long> {
 
-    List<Snapshot> findByProduct(Product product);
-
-    Optional<Snapshot> findByProductId(Long id);
+    List<Snapshot> findByProductId(Long productId);
 
 }

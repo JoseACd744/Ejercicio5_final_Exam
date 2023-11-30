@@ -13,6 +13,4 @@ public class SnapshotRequestDTO {
     private Double temperature;
     private Double energy;
     private Integer leakage;
-    private Long productId;
-
 }

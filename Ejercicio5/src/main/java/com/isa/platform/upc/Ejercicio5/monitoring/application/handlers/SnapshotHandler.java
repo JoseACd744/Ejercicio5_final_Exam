@@ -38,25 +38,29 @@ public class SnapshotHandler implements SnapshotQueryService, SnapshotCommandSer
 
     @Override
     public SnapshotResponseDTO handle(CreateSnapshotCommand command) {
-        if (snapshotRepository.existsById(command.snapshotRequestDTO().getProductId())) {
-            throw new RuntimeException("A snapshot with the same product id already exists");
-        }
-        if (!productRepository.existsById(command.snapshotRequestDTO().getProductId())) {
-            throw new RuntimeException("A product with the same id does not exist");
-        }
-        validateSnapshotForProduct(command.snapshotRequestDTO(), productRepository.findById(command.snapshotRequestDTO().getProductId()).orElseThrow(RuntimeException::new));
+        Product product = productRepository.findById(command.ProductId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,"Product not found with id: " + command.ProductId()));
+
+        validateSnapshotForProduct(command.snapshotRequestDTO(), product);
         Snapshot snapshot = modelMapper.map(command.snapshotRequestDTO(), Snapshot.class);
+        snapshot.setProduct(product); // Set the product field
         Snapshot savedSnapshot = snapshotRepository.save(snapshot);
         return modelMapper.map(savedSnapshot, SnapshotResponseDTO.class);
     }
 
     @Override
-    public List<SnapshotResponseDTO> handle(GetSnapshotsByProductIdQuery query) {
-        Product product = productRepository.findById(query.productId())
-                .orElseThrow(() -> new RuntimeException("Product with the given id does not exist"));
-
-        return snapshotRepository.findByProduct(product)
-                .stream()
+    public List<SnapshotResponseDTO> handle(GetSnapshotsByProductIdQuery query){
+        if (query.productId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Product Id is required");
+        }
+        if(!productRepository.existsById(query.productId())){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Product not found with id: " + query.productId());
+        }
+        List<Snapshot> snapshots = snapshotRepository.findByProductId(query.productId());
+        if (snapshots.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"No snapshots found for product with id: " + query.productId());
+        }
+        return snapshots.stream()
                 .map(snapshot -> modelMapper.map(snapshot, SnapshotResponseDTO.class))
                 .collect(Collectors.toList());
     }
@@ -67,6 +71,7 @@ public class SnapshotHandler implements SnapshotQueryService, SnapshotCommandSer
                 && (snapshotRequest.getEnergy() != null || snapshotRequest.getLeakage() != null)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Snapshot Data not compatible with product current Monitoring Level");
         }
+
 
     }
 
